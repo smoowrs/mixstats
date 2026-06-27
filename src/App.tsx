@@ -217,7 +217,7 @@ export default function App() {
               {/* ===== TOP 3 PODIUM ===== */}
               {(() => {
                 const top3 = [...leaderboard]
-                  .sort((a, b) => b.winRate - a.winRate || b.kd - a.kd)
+                  .sort((a, b) => b.kills - a.kills)
                   .slice(0, 3);
                 if (top3.length < 1) return null;
 
@@ -403,7 +403,7 @@ export default function App() {
                     </thead>
                     <tbody className="divide-y divide-gc-border/50 text-sm">
                       {sortedLeaderboard.map((player, index) => (
-                        <tr key={player.id || index} className="hover:bg-gc-panel-hover transition-colors group">
+                        <tr key={player.id || index} className="transition-colors group">
                           <td className="px-3 py-3 text-center">
                             <span className={`font-display font-black text-base ${
                               index === 0 ? 'text-gc-yellow' :
