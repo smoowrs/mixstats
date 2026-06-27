@@ -1,0 +1,6 @@
+{
+  "name": "Mix Stats",
+  "description": "Ranking and match tracking platform for competitive 5v5 gaming mixes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
