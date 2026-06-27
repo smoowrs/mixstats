@@ -214,6 +214,127 @@ export default function App() {
           
           {activeTab === 'estatisticas' && (
             <>
+              {/* ===== TOP 3 PODIUM ===== */}
+              {(() => {
+                const top3 = [...leaderboard]
+                  .sort((a, b) => b.winRate - a.winRate || b.kd - a.kd)
+                  .slice(0, 3);
+                if (top3.length < 1) return null;
+
+                const medals = [
+                  { label: '1°', color: '#FFB300', glow: 'rgba(255,179,0,0.35)', border: '#FFB300', height: 'h-28', order: 2, podiumH: 'h-16', textColor: 'text-gc-yellow' },
+                  { label: '2°', color: '#A8B8CC', glow: 'rgba(168,184,204,0.25)', border: '#A8B8CC', height: 'h-24', order: 1, podiumH: 'h-10', textColor: 'text-zinc-300' },
+                  { label: '3°', color: '#CD7F32', glow: 'rgba(205,127,50,0.25)', border: '#CD7F32', height: 'h-20', order: 3, podiumH: 'h-7', textColor: 'text-orange-400' },
+                ];
+
+                // positions: [2nd, 1st, 3rd]
+                const podiumOrder = [top3[1], top3[0], top3[2]];
+                const medalOrder = [medals[1], medals[0], medals[2]];
+
+                return (
+                  <div className="gc-panel p-6 md:p-10 mb-2">
+                    {/* Header */}
+                    <div className="flex items-center gap-3 mb-8">
+                      <Trophy className="w-6 h-6 text-gc-yellow" />
+                      <div>
+                        <h2 className="font-display font-black text-2xl text-white uppercase tracking-tight">Top Ranking</h2>
+                        <p className="text-gc-text-muted text-xs uppercase tracking-widest font-display font-semibold mt-0.5">Os 3 Melhores Players do Mix</p>
+                      </div>
+                    </div>
+
+                    {/* Podium */}
+                    <div className="flex items-end justify-center gap-3 md:gap-6">
+                      {podiumOrder.map((player, i) => {
+                        if (!player) return <div key={i} className="flex-1 max-w-[200px]" />;
+                        const m = medalOrder[i];
+                        return (
+                          <div key={player.id} className="flex-1 max-w-[220px] flex flex-col items-center" style={{ order: m.order }}>
+                            {/* Player Card */}
+                            <div
+                              className="w-full rounded-xl p-4 flex flex-col items-center gap-2 mb-0 relative transition-transform hover:-translate-y-1 duration-300"
+                              style={{
+                                background: `linear-gradient(160deg, #0d141c 60%, ${m.glow.replace('0.35','0.12').replace('0.25','0.08')} 100%)`,
+                                border: `1.5px solid ${m.border}33`,
+                                boxShadow: `0 0 24px 0 ${m.glow}`,
+                              }}
+                            >
+                              {/* Medal badge */}
+                              <div
+                                className="absolute -top-3 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full flex items-center justify-center font-display font-black text-xs z-10 border-2"
+                                style={{ background: m.color, borderColor: m.color, color: '#06090e', boxShadow: `0 0 10px ${m.glow}` }}
+                              >
+                                {i === 1 ? '1' : i === 0 ? '2' : '3'}
+                              </div>
+
+                              {/* Avatar */}
+                              <div
+                                className="w-16 h-16 rounded-full overflow-hidden mt-3 flex-shrink-0"
+                                style={{ border: `3px solid ${m.border}`, boxShadow: `0 0 16px 0 ${m.glow}` }}
+                              >
+                                <img
+                                  src={`https://api.dicebear.com/9.x/avataaars/svg?seed=${player.name}&backgroundColor=151f2b`}
+                                  alt={player.name}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+
+                              {/* Name */}
+                              <span className="font-display font-black text-sm text-white uppercase tracking-wide text-center truncate w-full px-1" title={player.name}>
+                                {player.name}
+                              </span>
+
+                              {/* Stats */}
+                              <div className="w-full grid grid-cols-3 gap-1 mt-1">
+                                <div className="flex flex-col items-center bg-[#06090e] rounded-lg py-1.5 px-1">
+                                  <span className="font-display font-black text-sm" style={{ color: m.color }}>
+                                    {player.winRate.toFixed(0)}%
+                                  </span>
+                                  <span className="text-gc-text-muted text-[9px] uppercase tracking-wider font-semibold">Win</span>
+                                </div>
+                                <div className="flex flex-col items-center bg-[#06090e] rounded-lg py-1.5 px-1">
+                                  <span className="font-display font-black text-sm text-gc-green">
+                                    {player.kd.toFixed(2)}
+                                  </span>
+                                  <span className="text-gc-text-muted text-[9px] uppercase tracking-wider font-semibold">K/D</span>
+                                </div>
+                                <div className="flex flex-col items-center bg-[#06090e] rounded-lg py-1.5 px-1">
+                                  <span className="font-display font-black text-sm text-white">
+                                    {player.kills}
+                                  </span>
+                                  <span className="text-gc-text-muted text-[9px] uppercase tracking-wider font-semibold">Kills</span>
+                                </div>
+                              </div>
+
+                              {/* MVP count */}
+                              {player.mvp > 0 && (
+                                <div className="flex items-center gap-1 mt-0.5">
+                                  <span className="text-gc-yellow text-xs">★</span>
+                                  <span className="text-gc-text-muted text-[10px] font-semibold">{player.mvp} MVPs</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Pedestal / Step */}
+                            <div
+                              className={`w-full ${m.podiumH} rounded-t-lg flex items-center justify-center font-display font-black text-lg`}
+                              style={{
+                                background: `linear-gradient(180deg, ${m.border}22 0%, ${m.border}11 100%)`,
+                                borderTop: `2px solid ${m.border}55`,
+                                borderLeft: `1px solid ${m.border}22`,
+                                borderRight: `1px solid ${m.border}22`,
+                                color: m.color,
+                              }}
+                            >
+                              {m.label}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
+
               {/* Título da Seção */}
               <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
