@@ -78,17 +78,28 @@ export default function App() {
     setUploadSuccess(false);
     setUploadError(null);
 
-    const formData = new FormData();
-    formData.append('image', file);
-
     try {
+      // Convert file to base64
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          // Remove data URL prefix (e.g. "data:image/png;base64,")
+          resolve(result.split(',')[1]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
       const response = await fetch('/api/extract-stats', {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ base64, mimeType: file.type })
       });
 
       if (!response.ok) {
-        throw new Error('Falha ao processar a imagem. Tente novamente.');
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || 'Falha ao processar a imagem. Tente novamente.');
       }
 
       const data = await response.json();
@@ -103,11 +114,9 @@ export default function App() {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-      
-      // Add fake log for simulation
       setUploadLogs(prev => [{
         id: Date.now(),
-        user: 'Smoow', // Current user
+        user: 'Smoow',
         date: 'Agora mesmo',
         type: 'Print de Partida (5v5)'
       }, ...prev]);
