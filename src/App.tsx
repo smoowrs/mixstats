@@ -283,25 +283,25 @@ export default function App() {
                                 {player.name}
                               </span>
 
-                              {/* Stats */}
-                              <div className="w-full grid grid-cols-3 gap-1 mt-1">
-                                <div className="flex flex-col items-center bg-[#06090e] rounded-lg py-1.5 px-1">
+                              {/* Stats — empilhados verticalmente (mobile-safe) */}
+                              <div className="w-full flex flex-col gap-1 mt-1">
+                                <div className="flex items-center justify-between bg-[#06090e] rounded-lg py-1 px-2">
+                                  <span className="text-gc-text-muted text-[10px] uppercase tracking-wider font-semibold">Win</span>
                                   <span className="font-display font-black text-sm" style={{ color: m.color }}>
                                     {player.winRate.toFixed(0)}%
                                   </span>
-                                  <span className="text-gc-text-muted text-[9px] uppercase tracking-wider font-semibold">Win</span>
                                 </div>
-                                <div className="flex flex-col items-center bg-[#06090e] rounded-lg py-1.5 px-1">
+                                <div className="flex items-center justify-between bg-[#06090e] rounded-lg py-1 px-2">
+                                  <span className="text-gc-text-muted text-[10px] uppercase tracking-wider font-semibold">K/D</span>
                                   <span className="font-display font-black text-sm text-gc-green">
                                     {player.kd.toFixed(2)}
                                   </span>
-                                  <span className="text-gc-text-muted text-[9px] uppercase tracking-wider font-semibold">K/D</span>
                                 </div>
-                                <div className="flex flex-col items-center bg-[#06090e] rounded-lg py-1.5 px-1">
+                                <div className="flex items-center justify-between bg-[#06090e] rounded-lg py-1 px-2">
+                                  <span className="text-gc-text-muted text-[10px] uppercase tracking-wider font-semibold">Kills</span>
                                   <span className="font-display font-black text-sm text-white">
                                     {player.kills}
                                   </span>
-                                  <span className="text-gc-text-muted text-[9px] uppercase tracking-wider font-semibold">Kills</span>
                                 </div>
                               </div>
 

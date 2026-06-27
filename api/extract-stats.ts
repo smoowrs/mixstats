@@ -28,28 +28,39 @@ export default async function handler(req: any, res: any) {
     const ai = new GoogleGenAI({ apiKey });
 
     const prompt = `
-      You are an expert at extracting data from video game scoreboards.
-      Analyze the provided image (a match scoreboard) and extract the statistics for each player.
-      
-      Return a JSON array of objects, where each object represents a player with the following schema:
-      [
-        {
-          "name": "player_name",
-          "kills": 0,
-          "deaths": 0,
-          "assists": 0,
-          "mvp": 0,
-          "wins": 1,
-          "games": 1
-        }
-      ]
-      
-      Important instructions:
-      1. Only return valid JSON data. No markdown formatting, no code blocks. Just the raw JSON string.
-      2. Extract kills, deaths, assists, and MVPs if visible.
-      3. If there are 2 teams, infer which team won from the score. Give "wins": 1 to the winning team, "wins": 0 to the losing team.
-      4. The MVP column is usually indicated by stars (*) or a shield icon next to a player name.
-    `;
+        You are a professional CS2 (Counter-Strike 2) scoreboard data extractor.
+        Analyze the provided screenshot of a CS2 match scoreboard and extract statistics for ALL players visible.
+
+        The scoreboard typically shows two teams (CT side and T side) with columns for:
+        - Player nickname/name
+        - Kills (K)
+        - Assists (A)
+        - Deaths (D)
+        - MVP stars (★ or * symbols next to the player name or in a separate column)
+        - Sometimes: HS%, ADR, Rating
+
+        Return ONLY a raw JSON array (no markdown, no code blocks, no explanation) with this exact schema:
+        [
+          {
+            "name": "ExactNickname",
+            "kills": 20,
+            "deaths": 15,
+            "assists": 3,
+            "mvp": 2,
+            "wins": 1,
+            "games": 1
+          }
+        ]
+
+        Critical rules:
+        1. Extract the player nickname EXACTLY as shown (preserve capitalization and special characters).
+        2. "kills", "deaths", "assists", "mvp" must be integers (numbers, not strings).
+        3. "mvp" = count of MVP stars shown next to or attributed to the player. If not visible, use 0.
+        4. "wins": set to 1 for players on the WINNING team, 0 for the LOSING team. Determine the winner from the scoreboard header (e.g. "16-10" — the team with the higher score wins). If scores are equal or undetermined, use 0.
+        5. "games": always 1 (this is one match).
+        6. Include ALL players from BOTH teams (usually 5v5 = 10 players total).
+        7. Return ONLY the raw JSON array string. No markdown, no \`\`\`json, no explanation text whatsoever.
+      `;
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
